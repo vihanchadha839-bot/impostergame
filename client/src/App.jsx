@@ -67,28 +67,21 @@ function HomeScreen({ onJoin }) {
         />
       </div>
 
-      {!mode && (
-        <>
-          <button className="btn btn-primary" onClick={() => setMode("create")}>
-            ⚡ Create Room
-          </button>
-          <div className="divider">or</div>
-          <button className="btn btn-secondary" onClick={() => setMode("join")}>
-            🔑 Join Room
-          </button>
-        </>
-      )}
+    <div className="card">
+        <div className="card-title">ROOM CODE (leave empty to create)</div>
+        <input
+          type="text"
+          placeholder="Enter code to join, or leave empty..."
+          value={code}
+          onChange={e => setCode(e.target.value.toUpperCase())}
+          maxLength={5}
+          autoComplete="off"
+        />
+      </div>
 
-      {mode === "create" && (
-        <>
-          <button className="btn btn-primary" onClick={handleCreate}>
-            🚀 Create & Start
-          </button>
-          <button className="btn btn-secondary" onClick={() => { setMode(null); setError(""); }}>
-            ← Back
-          </button>
-        </>
-      )}
+      <button className="btn btn-primary" onClick={() => code.trim() ? handleJoin() : handleCreate()}>
+        {code.trim() ? "🔑 Join Room" : "⚡ Create Room"}
+      </button>
 
       {mode === "join" && (
         <>
