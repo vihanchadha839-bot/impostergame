@@ -527,8 +527,9 @@ export default function App() {
 
   // Game started event
   useEffect(() => {
-    const onGameStarted = ({ question }) => {
+const onGameStarted = ({ question, players }) => {
       setMyQuestion(question);
+      setPlayers(players);
       setScreen("question");
     };
     sock.on("game_started", onGameStarted);
