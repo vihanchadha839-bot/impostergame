@@ -6,10 +6,9 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL || "";
 let socket = null;
 function getSocket() {
   if (!socket) {
-    socket = io(SERVER_URL || window.location.origin, {
-      path: "/socket.io",
-      transports: ["websocket", "polling"],
-    });
+ socket = io(SERVER_URL, {
+  transports: ["websocket", "polling"],
+});
   }
   return socket;
 }
