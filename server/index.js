@@ -81,8 +81,14 @@ const QUESTIONS = [
 
 const rooms = {};
 
-function generateCode() {
-  return Math.random().toString(36).substring(2, 7).toUpperCase();
+const usedQuestions = new Set();
+
+function getRandomQuestion() {
+  if (usedQuestions.size >= QUESTIONS.length) usedQuestions.clear();
+  let idx;
+  do { idx = Math.floor(Math.random() * QUESTIONS.length); } while (usedQuestions.has(idx));
+  usedQuestions.add(idx);
+  return QUESTIONS[idx];
 }
 
 function getRandomQuestion() {
