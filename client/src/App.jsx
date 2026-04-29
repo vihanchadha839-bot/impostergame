@@ -206,17 +206,15 @@ function LobbyScreen({ code, players: initPlayers, isHost, onStart, onBack }) {
   );
 }
 
-// ─── Question (pass the phone) ────────────────────────────────────────────────
+// ─── Question ────────────────────────────────────────────────────────────────
 function QuestionScreen({ question, players, myId, code, onAllSeen }) {
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [revealed, setRevealed] = useState(false);
-  const [seen, setSeen] = useState(0);
-  const [total, setTotal] = useState(players.length);
-  const hasSentRef = useRef(false);
+  const [ready, setReady] = useState(false);
+  const [readyCount, setReadyCount] = useState(0);
+  const [total] = useState(players.length);
   const sock = getSocket();
 
   useEffect(() => {
-    const onSeen = ({ seen, total }) => { setSeen(seen); setTotal(total); };
+    const onSeen = ({ seen }) => setReadyCount(seen);
     const onDiscuss = () => onAllSeen();
     sock.on("seen_update", onSeen);
     sock.on("phase_discuss", onDiscuss);
@@ -226,81 +224,37 @@ function QuestionScreen({ question, players, myId, code, onAllSeen }) {
     };
   }, [onAllSeen]);
 
-  // This screen handles passing phone to each player
-  // We track locally which player is "up"
-  const currentPlayer = players[currentIdx];
-  const isMe = currentPlayer?.id === myId;
-
-  const handleNext = () => {
-    setRevealed(false);
-    if (currentIdx + 1 >= players.length) {
-      // all local players done, emit seen
-      if (!hasSentRef.current) {
-        hasSentRef.current = true;
-        sock.emit("seen_question", { code });
-      }
-    } else {
-      setCurrentIdx(currentIdx + 1);
-    }
+  const handleReady = () => {
+    if (ready) return;
+    setReady(true);
+    sock.emit("seen_question", { code });
   };
-
-  const allLocalDone = currentIdx >= players.length;
-
-  if (allLocalDone) {
-    return (
-      <div className="screen">
-        <div className="logo" style={{fontSize:"2rem"}}>ALL SEEN</div>
-        <div className="card" style={{textAlign:"center"}}>
-          <div className="question-label">Waiting for all devices</div>
-          <div className="waiting pulse" style={{marginTop:12}}>
-            {seen}/{total} devices ready...
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="screen">
       <div>
         <div className="logo" style={{fontSize:"2rem"}}>YOUR QUESTION</div>
-        <div className="subtitle">Pass to: <strong style={{color:"var(--green)"}}>{currentPlayer?.name}</strong></div>
+        <div className="subtitle">Read it — don't show anyone!</div>
       </div>
 
-      {!revealed ? (
-        <>
-          <div className="card" style={{textAlign:"center", padding:"40px 20px"}}>
-            <div style={{fontSize:"3rem", marginBottom:16}}>📱</div>
-            <div style={{fontSize:"1.1rem", fontWeight:600, marginBottom:8}}>
-              Hey <span style={{color:"var(--green)"}}>{currentPlayer?.name}</span>!
-            </div>
-            <div style={{fontSize:"0.9rem", color:"var(--text-muted)"}}>
-              Only YOU should see the next screen.<br/>
-              Make sure no one else is watching.
-            </div>
-          </div>
-          <button className="btn btn-primary" onClick={() => setRevealed(true)}>
-            👁 Reveal My Question
-          </button>
-        </>
-      ) : (
-        <>
-          <div className="question-box">
-            <div className="question-label">YOUR QUESTION IS</div>
-            <div className="question-text">{question}</div>
-          </div>
-          <div className="card" style={{fontSize:"0.85rem", color:"var(--text-muted)", textAlign:"center"}}>
-            📌 Remember your question. Discuss with the group — but don't reveal it directly!
-          </div>
-          <button className="btn btn-primary" onClick={handleNext}>
-            {currentIdx + 1 >= players.length ? "✅ I'm Done" : `Next: ${players[currentIdx + 1]?.name} →`}
-          </button>
-        </>
+      <div className="question-box">
+        <div className="question-label">YOUR QUESTION IS</div>
+        <div className="question-text">{question}</div>
+      </div>
+
+      <div className="card" style={{fontSize:"0.85rem", color:"var(--text-muted)", textAlign:"center"}}>
+        📌 Remember your question. Discuss with the group — but don't reveal it directly!
+      </div>
+
+      <button className="btn btn-primary" onClick={handleReady} disabled={ready}>
+        {ready ? "✅ Waiting for others..." : "✋ I'm Ready to Vote"}
+      </button>
+
+      {ready && (
+        <div className="seen-counter">
+          <strong>{readyCount}</strong>/{total} players ready...
+        </div>
       )}
-
-      <div className="seen-counter">
-        Player {currentIdx + 1} of {players.length}
-      </div>
     </div>
   );
 }
