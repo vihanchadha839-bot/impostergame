@@ -12,86 +12,73 @@ const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
-// ─── Question Bank ────────────────────────────────────────────────────────────
 const QUESTIONS = [
-  // Football
-  { normal: "Name a famous football stadium", imposter: "Name a famous basketball arena" },
-  { normal: "Who is the greatest footballer of all time?", imposter: "Who is the greatest tennis player of all time?" },
-  { normal: "What is the offside rule in football?", imposter: "What is the offsides rule in ice hockey?" },
-  { normal: "Name a football World Cup host country", imposter: "Name an Olympics host city" },
-  { normal: "What does a yellow card mean in football?", imposter: "What does a red flag mean in Formula 1?" },
-  { normal: "Name a famous football club from Spain", imposter: "Name a famous football club from Italy" },
-  { normal: "How many players are on a football pitch per team?", imposter: "How many players are on a rugby team?" },
-  { normal: "What do you call it when a footballer scores 3 goals?", imposter: "What do you call it when a cricketer takes 3 wickets in a row?" },
-  { normal: "Name a famous football manager", imposter: "Name a famous cricket coach" },
-  { normal: "What is the Champions League?", imposter: "What is the Europa League?" },
-  // Food
-  { normal: "Name a dish you'd eat at a BBQ", imposter: "Name a dish you'd eat at a fancy restaurant" },
-  { normal: "What is the most popular pizza topping?", imposter: "What is the most popular pasta sauce?" },
-  { normal: "Name a street food from India", imposter: "Name a street food from Mexico" },
-  { normal: "What do you put in a club sandwich?", imposter: "What do you put in a BLT sandwich?" },
-  { normal: "Name a dessert that uses chocolate", imposter: "Name a dessert that uses vanilla" },
-  { normal: "What's a common breakfast in the UK?", imposter: "What's a common breakfast in Japan?" },
-  { normal: "Name a popular fast food chain", imposter: "Name a popular coffee chain" },
-  { normal: "What ingredient makes bread rise?", imposter: "What ingredient makes cake fluffy?" },
-  // Movies & TV
-  { normal: "Name a Marvel superhero", imposter: "Name a DC superhero" },
-  { normal: "What is the most watched Netflix show ever?", imposter: "What is the most watched HBO show ever?" },
-  { normal: "Name a film that won Best Picture at the Oscars", imposter: "Name a film that won the Palme d'Or at Cannes" },
-  { normal: "Name a famous horror movie villain", imposter: "Name a famous thriller movie villain" },
-  { normal: "What is the highest grossing film of all time?", imposter: "What is the most expensive film ever made?" },
-  { normal: "Name a popular reality TV show", imposter: "Name a popular game show" },
-  { normal: "Name a famous animated Disney film", imposter: "Name a famous animated Pixar film" },
-  // Music
-  { normal: "Name a song by Beyoncé", imposter: "Name a song by Rihanna" },
-  { normal: "What instrument does a drummer play?", imposter: "What instrument does a bassist play?" },
-  { normal: "Name a famous music festival", imposter: "Name a famous awards show" },
-  { normal: "What genre is Drake?", imposter: "What genre is Kendrick Lamar?" },
-  { normal: "Name the best-selling album of all time", imposter: "Name the best-selling single of all time" },
-  // Travel
-  { normal: "Name a famous landmark in Paris", imposter: "Name a famous landmark in Rome" },
-  { normal: "What country is the Amazon rainforest mainly in?", imposter: "What country is the Sahara desert mainly in?" },
-  { normal: "Name a popular beach holiday destination", imposter: "Name a popular ski holiday destination" },
-  { normal: "What is the world's most visited city?", imposter: "What is the world's most visited country?" },
-  { normal: "Name a famous national park", imposter: "Name a famous nature reserve" },
-  // Tech
-  { normal: "Who founded Apple?", imposter: "Who founded Microsoft?" },
-  { normal: "What does AI stand for?", imposter: "What does ML stand for?" },
-  { normal: "Name a popular social media platform", imposter: "Name a popular messaging app" },
-  { normal: "What is the best-selling video game console?", imposter: "What is the best-selling handheld console?" },
-  { normal: "Name a programming language", imposter: "Name a database system" },
-  // Random & Funny
-  { normal: "What's something you'd find in a teenager's bedroom?", imposter: "What's something you'd find in a grandparent's living room?" },
-  { normal: "Name something people do when they're bored", imposter: "Name something people do when they're nervous" },
-  { normal: "What's a common excuse for being late?", imposter: "What's a common excuse for not doing homework?" },
-  { normal: "Name something that gets louder as the night goes on", imposter: "Name something that gets quieter as the night goes on" },
-  { normal: "What do you bring to a house party?", imposter: "What do you bring to a wedding?" },
-  { normal: "Name a job people lie about having", imposter: "Name a job people are embarrassed to admit they have" },
-  { normal: "What's something you'd regret saying at a job interview?", imposter: "What's something you'd regret saying on a first date?" },
-  { normal: "Name something people do in the shower", imposter: "Name something people do in the car alone" },
-  // Sports (non-football)
-  { normal: "Name an Olympic sport that uses a ball", imposter: "Name an Olympic sport that uses a racket" },
-  { normal: "What country dominates in sumo wrestling?", imposter: "What country dominates in table tennis?" },
-  { normal: "Name a famous boxer", imposter: "Name a famous MMA fighter" },
-  { normal: "What sport is played at Wimbledon?", imposter: "What sport is played at Augusta National?" },
-  // Animals
-  { normal: "Name an animal that lives in the jungle", imposter: "Name an animal that lives in the savannah" },
-  { normal: "What's the fastest land animal?", imposter: "What's the fastest animal in water?" },
-  { normal: "Name an animal that people keep as an exotic pet", imposter: "Name an animal that people are terrified of" },
-  // History & Culture
-  { normal: "Name a famous ancient civilization", imposter: "Name a famous medieval kingdom" },
-  { normal: "Who painted the Mona Lisa?", imposter: "Who painted the Sistine Chapel ceiling?" },
-  { normal: "Name a country that had a revolution in the 20th century", imposter: "Name a country that gained independence in the 20th century" },
-  { normal: "Name something associated with ancient Egypt", imposter: "Name something associated with ancient Greece" },
-  // Lifestyle
-  { normal: "Name a reason someone might go to therapy", imposter: "Name a reason someone might hire a life coach" },
-  { normal: "What's a typical Sunday morning activity?", imposter: "What's a typical Saturday night activity?" },
-  { normal: "Name something people do to show off", imposter: "Name something people do to impress their in-laws" },
-  { normal: "What do rich people waste money on?", imposter: "What do broke people waste money on?" },
-  { normal: "Name a sign that someone is in love", imposter: "Name a sign that someone is obsessed" },
+  { normal: "What's something you do in private you'd NEVER admit in public?", imposter: "What's something you do in public you'd never admit to your mum?" },
+  { normal: "What's the most embarrassing thing in your search history?", imposter: "What's the most embarrassing thing in your camera roll?" },
+  { normal: "Name a red flag you 100% ignored in a relationship", imposter: "Name a green flag that turned out to be a massive red flag" },
+  { normal: "What would your ex say about you behind your back?", imposter: "What would your situationship say about you?" },
+  { normal: "Name something people lie about on their dating profile", imposter: "Name something people lie about on their CV" },
+  { normal: "What's the worst excuse you've used to cancel plans?", imposter: "What's the worst excuse you've used to leave a party early?" },
+  { normal: "What do people do when they think no one is watching?", imposter: "What do people do when they think no one is listening?" },
+  { normal: "Name something people pretend to understand but absolutely don't", imposter: "Name something people pretend to like but secretly hate" },
+  { normal: "What's something you'd only admit when you're drunk?", imposter: "What's something you'd only admit to your best friend at 3am?" },
+  { normal: "What would your pet say about you if it could talk?", imposter: "What would your neighbour say about you if they were brutally honest?" },
+  { normal: "Name a sign someone was definitely raised wrong", imposter: "Name a sign someone peaked in secondary school" },
+  { normal: "What's the worst text to accidentally send your boss?", imposter: "What's the worst thing to accidentally post publicly instead of on your close friends?" },
+  { normal: "What do people Google at 2am that they'd never say out loud?", imposter: "What do people search on YouTube at 3am?" },
+  { normal: "Name something that makes someone instantly unlikeable", imposter: "Name something that makes someone instantly suspicious" },
+  { normal: "What's the most passive aggressive gift you could give someone?", imposter: "What's the most passive aggressive thing to write in a birthday card?" },
+  { normal: "Name a sentence that would ruin a first date instantly", imposter: "Name a sentence that would end a friendship on the spot" },
+  { normal: "What's the most unhinged thing someone could order at McDonald's?", imposter: "What's the most chaotic thing someone could order at a fancy restaurant?" },
+  { normal: "What would a villain's morning routine look like?", imposter: "What would a villain's Spotify wrapped look like?" },
+  { normal: "Name the worst possible thing to say at a funeral", imposter: "Name the worst possible thing to say in a wedding speech" },
+  { normal: "What does your Spotify wrapped say about your personality?", imposter: "What does your Netflix history say about your mental state?" },
+  { normal: "Name something only broke people relate to", imposter: "Name something only extremely online people relate to" },
+  { normal: "Name a job that sounds fun but is actually miserable", imposter: "Name a job that sounds boring but is secretly amazing" },
+  { normal: "Name a sign someone is having a quarter-life crisis", imposter: "Name a sign someone is having a midlife crisis" },
+  { normal: "What's the most suspicious thing to buy at a supermarket at midnight?", imposter: "What's the most suspicious thing to search on Amazon?" },
+  { normal: "Name something people do at 2am that they regret by 8am", imposter: "Name something people do on a Sunday they regret on Monday morning" },
+  { normal: "What's something you've done that you'd take to the grave?", imposter: "What's something you've witnessed that you'd take to the grave?" },
+  { normal: "Name a totally normal thing that becomes weird when you think about it too long", imposter: "Name something everyone does but no one talks about" },
+  { normal: "What's your villain trait that you try to hide?", imposter: "What's your main character trait that others find annoying?" },
+  { normal: "What would the warning label on you say?", imposter: "What would your terms and conditions say if you were an app?" },
+  { normal: "Name something that hits different at 3am", imposter: "Name something that hits different when you're sick" },
+  { normal: "Name a footballer who definitely has main character energy", imposter: "Name a footballer who gives background character energy" },
+  { normal: "What would a footballer post on their finsta?", imposter: "What would a football manager post if they had a secret Twitter?" },
+  { normal: "Name something Ronaldo does that Messi would never", imposter: "Name something Messi does that Ronaldo would never" },
+  { normal: "Name a footballer who looks like they smell amazing", imposter: "Name a footballer who looks like they'd be terrible at cooking" },
+  { normal: "What would a footballer's dating profile bio say?", imposter: "What would a football pundit's dating profile say?" },
+  { normal: "Name a footballer who would definitely ghost you", imposter: "Name a footballer who would definitely be way too clingy" },
+  { normal: "Name a football celebration that looks ridiculous in slow motion", imposter: "Name a football celebration that looks cool but means nothing" },
+  { normal: "Name a celebrity that definitely has a weird hidden hobby", imposter: "Name a celebrity that definitely has a chaotic group chat" },
+  { normal: "What would Taylor Swift write a song about if she dated you?", imposter: "What would Drake write a diss track about if he met you?" },
+  { normal: "Name a reality TV show that describes your life perfectly", imposter: "Name a reality TV show that describes your friendship group" },
+  { normal: "What would your villain origin story be?", imposter: "What would your redemption arc look like?" },
+  { normal: "Name a movie character you'd be in a horror film", imposter: "Name a movie character you'd be in a heist film" },
+  { normal: "Name a celebrity you could definitely beat in a fight", imposter: "Name a celebrity who could definitely destroy you in a fight" },
+  { normal: "What song plays when you walk into a room?", imposter: "What song plays when you leave a room?" },
+  { normal: "Name a Disney villain who was actually right", imposter: "Name a Disney hero who was actually kind of terrible" },
+  { normal: "If your personality was a food, what would it be?", imposter: "If your energy was a weather forecast, what would it say?" },
+  { normal: "What's the most unhinged thing you believe that you can't prove?", imposter: "What's the most controversial opinion you hold that you think is correct?" },
+  { normal: "If you had to describe yourself using only a font, which font are you?", imposter: "If you had to describe yourself using only one emoji, which one?" },
+  { normal: "If your friendship group was a sitcom, what would it be called?", imposter: "If your friendship group was a documentary, what would it expose?" },
+  { normal: "Name something that exists that really shouldn't", imposter: "Name something that doesn't exist but really should" },
+  { normal: "What would you do with a free hour if no one would ever find out?", imposter: "What would you do with £1000 if no one would ever find out?" },
+  { normal: "Name a smell that unlocks a core memory", imposter: "Name a song that unlocks a core memory you'd rather forget" },
+  { normal: "Name something that was better before it became popular", imposter: "Name something that only got good once everyone started doing it" },
+  { normal: "Name something you do that you'd be embarrassed if it was on CCTV", imposter: "Name something you'd do differently if you knew you were being filmed" },
+  { normal: "What's the most unserious reason you've ended a friendship?", imposter: "What's the most unserious reason you've fallen out with someone?" },
+  { normal: "What's something your body does that you have no explanation for?", imposter: "What's something your brain does that you have absolutely no control over?" },
+  { normal: "What's the most unhinged thing someone has said to you like it was normal?", imposter: "What's the most unhinged thing you've said to someone like it was completely normal?" },
+  { normal: "Name something that's technically legal but feels like it really shouldn't be", imposter: "Name something that's technically free but feels like stealing" },
+  { normal: "What's something everyone thinks is normal but is actually insane if you think about it?", imposter: "What's something society fully accepts that makes absolutely no sense?" },
+  { normal: "What would your Roman Empire be?", imposter: "What do you think about more than you'd ever admit?" },
+  { normal: "Name something you do before bed that no one knows about", imposter: "Name something you do first thing in the morning that you're embarrassed by" },
+  { normal: "What's the most unserious hill you would die on?", imposter: "What's the most irrational thing you genuinely believe?" },
+  { normal: "Name a character from a kids show that clearly has unresolved trauma", imposter: "Name a kids show that was definitely not made for kids" },
+  { normal: "What's the most embarrassing thing you've done to impress someone?", imposter: "What's the most embarrassing thing you've done when you thought you were alone?" },
 ];
 
-// ─── In-Memory Rooms ──────────────────────────────────────────────────────────
 const rooms = {};
 
 function generateCode() {
@@ -102,7 +89,6 @@ function getRandomQuestion() {
   return QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
 }
 
-// ─── Socket Logic ─────────────────────────────────────────────────────────────
 io.on("connection", (socket) => {
   console.log("Connected:", socket.id);
 
@@ -111,14 +97,14 @@ io.on("connection", (socket) => {
     rooms[code] = {
       code,
       players: [{ id: socket.id, name, isHost: true }],
-      phase: "lobby", // lobby | question | discuss | vote | reveal
+      phase: "lobby",
       imposter: null,
       question: null,
       votes: {},
       seenCount: 0,
     };
     socket.join(code);
-    socket.emit("room_joined", { code, players: rooms[code].players, isHost: true });
+    io.to(code).emit("room_joined", { code, players: rooms[code].players, isHost: true });
     console.log(`Room ${code} created by ${name}`);
   });
 
@@ -140,7 +126,6 @@ io.on("connection", (socket) => {
     if (!room) return;
     if (room.players.length < 3) return socket.emit("error", "Need at least 3 players");
 
-    // Pick imposter and question
     const imposterIndex = Math.floor(Math.random() * room.players.length);
     room.imposter = room.players[imposterIndex].id;
     room.question = getRandomQuestion();
@@ -148,12 +133,11 @@ io.on("connection", (socket) => {
     room.seenCount = 0;
     room.votes = {};
 
-    // Tell everyone to go to question phase, send each their own question
     room.players.forEach((p) => {
       const q = p.id === room.imposter ? room.question.imposter : room.question.normal;
-      io.to(p.id).emit("game_started", { question: q });
+      io.to(p.id).emit("game_started", { question: q, players: room.players });
     });
-    console.log(`Game started in room ${code}, imposter: ${room.imposter}`);
+    console.log(`Game started in room ${code}`);
   });
 
   socket.on("seen_question", ({ code }) => {
@@ -183,7 +167,6 @@ io.on("connection", (socket) => {
     io.to(code).emit("vote_update", { voteCount, total: room.players.length });
 
     if (voteCount >= room.players.length) {
-      // Tally votes
       const tally = {};
       Object.values(room.votes).forEach((id) => {
         tally[id] = (tally[id] || 0) + 1;
@@ -235,7 +218,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// ─── Health check ─────────────────────────────────────────────────────────────
 app.get("/", (req, res) => res.send("Imposter Game Server Running"));
 
 const PORT = process.env.PORT || 3001;
