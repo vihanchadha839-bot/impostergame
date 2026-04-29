@@ -3,7 +3,6 @@ import { io } from "socket.io-client";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || "";
 
-// ─── Socket singleton ─────────────────────────────────────────────────────────
 let socket = null;
 function getSocket() {
   if (!socket) {
@@ -15,21 +14,14 @@ function getSocket() {
   return socket;
 }
 
-// ─── Emoji avatar helper ──────────────────────────────────────────────────────
 const EMOJIS = ["⚽","🏆","🎯","🦁","🔥","🌟","💎","🎮","🚀","🦊","🐺","🎸"];
 function getEmoji(name) { return EMOJIS[name.charCodeAt(0) % EMOJIS.length]; }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// SCREENS
-// ═════════════════════════════════════════════════════════════════════════════
-
-// ─── Home ─────────────────────────────────────────────────────────────────────
 function HomeScreen({ onJoin }) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
-  const [mode, setMode] = useState(null); // "create" | "join"
+  const [mode, setMode] = useState(null);
   const [error, setError] = useState("");
-
   const sock = getSocket();
 
   useEffect(() => {
@@ -135,8 +127,7 @@ function HomeScreen({ onJoin }) {
   );
 }
 
-// ─── Lobby ────────────────────────────────────────────────────────────────────
-function LobbyScreen({ code, players: initPlayers, isHost, onStart, onBack }) {
+function LobbyScreen({ code, players: initPlayers, isHost, onBack }) {
   const [players, setPlayers] = useState(initPlayers);
   const [error, setError] = useState("");
   const sock = getSocket();
@@ -144,7 +135,6 @@ function LobbyScreen({ code, players: initPlayers, isHost, onStart, onBack }) {
   useEffect(() => {
     const onUpdate = (p) => setPlayers(p);
     const onErr = (msg) => setError(msg);
-    const onStart = (data) => {}; // handled in parent
     sock.on("players_updated", onUpdate);
     sock.on("error", onErr);
     return () => {
@@ -206,7 +196,6 @@ function LobbyScreen({ code, players: initPlayers, isHost, onStart, onBack }) {
   );
 }
 
-// ─── Question ────────────────────────────────────────────────────────────────
 function QuestionScreen({ question, players, myId, code, onAllSeen }) {
   const [ready, setReady] = useState(false);
   const [readyCount, setReadyCount] = useState(0);
@@ -259,7 +248,6 @@ function QuestionScreen({ question, players, myId, code, onAllSeen }) {
   );
 }
 
-// ─── Discuss ──────────────────────────────────────────────────────────────────
 function DiscussScreen({ isHost, code, players, onVote }) {
   const sock = getSocket();
 
@@ -313,7 +301,6 @@ function DiscussScreen({ isHost, code, players, onVote }) {
   );
 }
 
-// ─── Vote ─────────────────────────────────────────────────────────────────────
 function VoteScreen({ players, myId, code, onReveal }) {
   const [voted, setVoted] = useState(null);
   const [voteCount, setVoteCount] = useState(0);
@@ -381,7 +368,6 @@ function VoteScreen({ players, myId, code, onReveal }) {
   );
 }
 
-// ─── Reveal ───────────────────────────────────────────────────────────────────
 function RevealScreen({ data, isHost, code, onPlayAgain }) {
   const { imposter, normalQuestion, imposterQuestion, imposterCaught, votes, tally, players } = data;
   const sock = getSocket();
@@ -457,9 +443,6 @@ function RevealScreen({ data, isHost, code, onPlayAgain }) {
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// ROOT APP
-// ═════════════════════════════════════════════════════════════════════════════
 export default function App() {
   const [screen, setScreen] = useState("home");
   const [roomCode, setRoomCode] = useState("");
@@ -471,7 +454,6 @@ export default function App() {
 
   const sock = getSocket();
 
-  // Get my socket id
   useEffect(() => {
     const onConnect = () => { myIdRef.current = sock.id; };
     if (sock.connected) myIdRef.current = sock.id;
@@ -479,9 +461,8 @@ export default function App() {
     return () => sock.off("connect", onConnect);
   }, []);
 
-  // Game started event
   useEffect(() => {
-const onGameStarted = ({ question, players }) => {
+    const onGameStarted = ({ question, players }) => {
       setMyQuestion(question);
       setPlayers(players);
       setScreen("question");
@@ -506,7 +487,7 @@ const onGameStarted = ({ question, players }) => {
   if (screen === "lobby") return (
     <LobbyScreen
       code={roomCode} players={players} isHost={isHost}
-      onStart={() => {}} onBack={() => setScreen("home")}
+      onBack={() => setScreen("home")}
     />
   );
   if (screen === "question") return (
